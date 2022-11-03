@@ -11,6 +11,6 @@ Escrito en Python, utiliza los siguientes módulos:
 - PyPDF2: tratamiento y manipulación de ficheros pdf.
 - PySimpleGUI: construcción de GUI.
 
-Versión ejecutable: basada en la versión embebida de Python, única solución después de probar varias (py2exe, pyinstaller, niutka) que acaban en una alerta antivirus.
+Versión ejecutable: basada en la versión embebida de Python, única solución después de probar varias (py2exe, pyinstaller, niutka) que acaban en una alerta antivirus. Disponible en la sección 'Release'.
 
---Concluir --
+Aún en desarrollo.
