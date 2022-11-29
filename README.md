@@ -1,6 +1,9 @@
 # pdf2name
-Extract some word from inside pdf file, and rename that file including that word. Processes all the files contained in a folder.
+ABSTRACT: Extracts some _word_ from _inside_ pdf file, and rename that file including _that word_. 
 
+Processes all pdf files contained in a folder.
+
+---
 
 Este pequeño código permite modificar el nombre de una serie de ficheros usando alguna palabra (distintiva) del interior de cada fichero. Ejemplos de uso:
 - una serie de certificados de asistencia, otorgados a distintas personas: para distinguirlos en una carpeta, se modifican los nombres de los ficheros usando en cada uno de ellos el número DNI de cada persona;
