@@ -1,14 +1,22 @@
-## Version: 0.8
-## 20221007 --> 202210XX
-## Cuarta versión completamente funcional, ya no tan fea.
+## Version: 0.9
+## 20221107  --> 20221206
+## Quinta versión completamente funcional, casi final.
 ''' Objetivo 0.9: Versión casi Beta
 
 La versión 0.9 debe incorporar:
   - Versión .exe sin alerta antivirus
-  - Poder elegir entre:
-        - mantener el nombre antiguo COMPLETO
-        - recortar del nombre antiguo el número final (_00X)
-  - GUI: listado de ficheros en formato texto, como el programa de ejemplo con los JPG
+  ok - Poder elegir entre:
+     ok   - mantener el nombre antiguo COMPLETO
+     ok   - recortar del nombre antiguo el número final (_00X)
+  ok - GUI: listado de ficheros en formato texto, como el programa de ejemplo con los JPG --> listbox
+  ok - Barra de Menú.
+  ok - Ayuda / instrucciones básicas --> link a Github
+
+
+
+  Además:
+    - Captura del error a través de  "except Exception as e: print("Hubo un error: " + str(e))"
+    -
 '''
 
 ## Objetivo 0.8: Pasar de un PMV a una versión tolerante a fallos
@@ -44,7 +52,7 @@ import os
 import shutil
 
 def funcMain():
-    def renombrar_un_fichero(carpeta_de_trabajo, nombre_antiguo, texto_corte = "DNI "):
+    def renombrar_un_fichero(carpeta_de_trabajo, nombre_antiguo, texto_corte = "DNI ", recortar=True):
         """Modifica el nombre de un pdf (certificado de un curso) usando el DNI contenido en ese mismo fichero pdf. """
         # Variables: objeto, y 4 palabras elegidas
 
@@ -86,11 +94,15 @@ def funcMain():
         dni = dni0[:9]
 
         # Ahora, renombrar el fichero
-        ## Versión para mantener el nombre antiguo COMPLETO:
-        #nuevo_nombre = dni + " " + nombre_antiguo.split('.')[0] + ".pdf"
+        # Si el checkbox - - está marcado (default), recorta 4 dígitos, si está desmarcado se mantiene completo
+        if recortar == True:
+            ## Versión para recortar el nº final del nombre antiguo:
+            nuevo_nombre = dni + " " + nombre_antiguo.split('.')[0][:-4] + ".pdf"
 
-        ## Versión para recortar el nº final del nombre antiguo:
-        nuevo_nombre = dni + " " + nombre_antiguo.split('.')[0][:-4] + ".pdf"
+        else:
+            ## Versión para mantener el nombre antiguo COMPLETO:
+            nuevo_nombre = dni + " " + nombre_antiguo.split('.')[0] + ".pdf"
+
 
         nuevo_nombre_completo = carpeta_de_trabajo + "/" + nuevo_nombre
         print(nuevo_nombre_completo)
@@ -107,7 +119,7 @@ def funcMain():
         return ficheros
 
 
-    def func_pral(dir_de_trabajo):
+    def func_pral(dir_de_trabajo, recortar):
         # Bucle principal
         try:
             with os.scandir(dir_de_trabajo) as ficheros:
@@ -116,9 +128,9 @@ def funcMain():
             print("Nº de ficheros a procesar: ", len(lista_ficheros))
 
             for fichero in lista_ficheros:
-                renombrar_un_fichero(dir_de_trabajo, fichero, txtCorte)
-        except:
-            print("Hubo un error.")
+                renombrar_un_fichero(dir_de_trabajo, fichero, txtCorte, recortar)
+        except Exception as e:
+            print("Hubo un error: " + str(e))
 
         print ("FIN.")
 
@@ -134,20 +146,24 @@ def funcMain():
 
     # =================== GUI =============================
     sg.theme('BluePurple')
+    menu_def = [['File', [ 'Exit'  ]],
+                ['Edit', ['Cambiar', 'Elegir dir' ], ],
+                ['Help',['Ayuda']], ]
 
     layout_l = [[sg.Text('Contenido inicial:')],
-               [sg.Output(size=(50, 10), key='-IN_OUTPUT-')]]
+               [sg.Listbox(values=[], enable_events=True, size=(60,10), select_mode='LISTBOX_SELECT_MODE_BROWSE', key='-IN_OUTPUT-')]] ##Multiline(size=(50, 10), key='-IN_OUTPUT-')]]
 
 
     layout_i = [[sg.Button('Transformar', key ='Transformar')]]
 
     layout_r = [[sg.Text('Contenido final:')],
-                [sg.Output(size=(60, 10), key='-IN_OUTPUT2-')]]
+                [sg.Listbox(values=[], enable_events=True, size=(60,10), select_mode='LISTBOX_SELECT_MODE_BROWSE', key='-IN_OUTPUT2-')]]##Multiline(size=(60, 10),  enable_events=True, key='-IN_OUTPUT2-')]]
 
 
-    layout =    [[sg.Text('Texto de corte: '), sg.Text('DNI ', background_color= 'white', key = '-TXT_CORTE-' , metadata = 'DNI '), sg.Button('Cambiar')],
+    layout =    [[sg.Menu(menu_def, )],
+                [sg.Text('Texto de corte: '), sg.Text('DNI ', background_color= 'white', key = '-TXT_CORTE-' , metadata = 'DNI '), sg.Button('Cambiar')],
                 [sg.Text('Elegir directorio:', key ='-TX_F-'), sg.Button('Elegir dir')],
-    #            [sg.Text('Folder'), sg.In(size=(25,1), enable_events=True ,key='-FOLDER-'), sg.FolderBrowse(enable_events=True, key='-FOLDERNAME-'), sg.Text(carpeta_de_trabajo), sg.Button('Cargar')],
+                [sg.Checkbox('Recortar 4 dígitos finales _00X', default=True, enable_events=True, key='-RECORTAR_CHKBOX-')],
                 [sg.Text('Directorio elegido:'), sg.Text('Antes de nada, elige un directorio.', size=(100,2), key='-DIR_OUTPUT-')],
                 [sg.Col(layout_l, p=0), sg.Col(layout_i, p=0), sg.Col(layout_r, p=0)],
                 [sg.Button('Exit')]]
@@ -162,27 +178,37 @@ def funcMain():
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
 
+
         if event == 'Elegir dir':
             eleg_dir = sg.popup_get_folder('Mensaje')
-            window['-DIR_OUTPUT-'].update(eleg_dir)
-            window['-IN_OUTPUT-'].update(mostrarListaFicheros(eleg_dir))
-            window['Transformar'].update(disabled=False)
+            if eleg_dir == None:
+                sg.popup_error('Elige un directorio válido.')
+
+            elif len(eleg_dir) > 1:
+                window['-DIR_OUTPUT-'].update(eleg_dir)
+                window['-IN_OUTPUT-'].update(mostrarListaFicheros(eleg_dir))
+                window['Transformar'].update(disabled=False)
+
+            else:
+                sg.popup_error('Elige un directorio válido.')
 
 
         if event == 'Cambiar':
             # almacena el valor antiguo por si hay que volver a él
             txtAntiguo = window['-TXT_CORTE-'].metadata
             # pide un nuevo valor
-            txtCorte = sg.popup_get_text('Mensaje')
+            txtCorte = sg.popup_get_text('Elije el texto de corte:')
             # gestión de error: si no elige ningún caracter o palabra
-            if len(txtCorte) <1:
-                sg.popup("Ok", "Elige al menos un caracter de corte.")
+            if txtCorte == None or len(txtCorte) <1:
+                sg.popup("Elige al menos un caracter de corte.")
                 # vuelve al valor anterior
                 txtCorte = txtAntiguo
             # actualiza valores
             window['-TXT_CORTE-'].update(txtCorte)
             window['-TXT_CORTE-'].metadata = txtCorte
 
+        if event == 'Ayuda':
+            sg.popup("Versión 1.0.\n Visita https://github.com/luisgentil/pdf2name")
 
         if event == 'Cargar':
             # Update the "output" text element to be the value of "input" element
@@ -194,7 +220,8 @@ def funcMain():
 
         if event == 'Transformar':
             window['-IN_OUTPUT2-'].update("Aquí vendrá el nuevo nombre")
-            func_pral(eleg_dir)
+            recortar = values['-RECORTAR_CHKBOX-']
+            func_pral(eleg_dir, recortar)
             window['-IN_OUTPUT2-'].update(mostrarListaFicheros(eleg_dir))
 
 
