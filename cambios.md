@@ -1,18 +1,24 @@
 # Cambios en cada versión
 
-## Objetivo 0.9: Versión casi Beta
+## Versión 1.0:
+Primera versión completa y funcional.
+Debe ser ejecutable en cualquier equipo con Windows.
 
-## La versión 0.9 debe incorporar:
-  - Versión .exe sin alerta antivirus
+
+### La versión 0.9 incorpora:
+Objetivo 0.9: Versión casi Beta
+
+  - Versión .exe sin alerta antivirus, mediante Python embebido
   - Poder elegir entre:
         - mantener el nombre antiguo COMPLETO
         - recortar del nombre antiguo el número final (_00X)
-  - GUI: listado de ficheros en formato texto, como el programa de ejemplo con los JPG
+  - GUI: listado de ficheros en formato texto, mediante listbox.
+  - Barra de Menú.
+  - Ayuda / instrucciones básicas: enlace a Github.
 
-
-Objetivo 0.8: Pasar de un PMV a una versión tolerante a fallos
 
 ### La versión 0.8 incorpora:
+Objetivo 0.8: Pasar de un PMV a una versión tolerante a fallos
 - If name = main
 - Generar versión .exe
  - Proyecto en Github
