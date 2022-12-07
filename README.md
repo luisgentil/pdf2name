@@ -14,6 +14,11 @@ Escrito en Python, utiliza los siguientes módulos:
 - PyPDF2: tratamiento y manipulación de ficheros pdf.
 - PySimpleGUI: construcción de GUI.
 
-Versión ejecutable: basada en la versión embebida de Python, única solución después de probar varias (py2exe, pyinstaller, niutka) que acaban en una alerta antivirus. Disponible en la sección 'Release'.
+*Windows - Versión ejecutable*: basada en la versión embebida de Python, única solución después de probar varias (py2exe, pyinstaller, niutka) que acaban en una alerta antivirus. Disponible en la sección 'Release'.
+Descargar, descomprimir en la carpeta "Descargas", ejecutar mediante el acceso directo PDF2Name_v.1.0.
+Cambiar la ubicación del programa: si se reubica fuera de la carpeta Descargas, modificar la ruta en el acceso directo PDF2Name_v.1.0.
 
-Aún en desarrollo.
+*Linux*: archivo ejecutable, probado en Linux Mint.
+
+
+
